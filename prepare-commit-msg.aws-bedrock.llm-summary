@@ -2,26 +2,106 @@
 
 import sys
 import subprocess
-import boto3
 import json
 import logging
-import configparser
 from pathlib import Path
+from dataclasses import dataclass
+from typing import Literal, Optional
+import os
+
+@dataclass
+class AIConfig:
+    provider: Literal["aws-bedrock", "openai"]
+    model_id: str
+    max_tokens: int
+    temperature: float
+    user_prompt: str
+    system_prompt: str
+
+@dataclass
+class AWSConfig:
+    profile_name: str
+
+@dataclass
+class OpenAIConfig:
+    api_key: str
+
+@dataclass
+class Config:
+    ai: AIConfig
+    aws: Optional[AWSConfig] = None
+    openai: Optional[OpenAIConfig] = None
+
+def load_and_validate_config(config_file: Path) -> Config:
+    try:
+        with open(config_file, 'r') as f:
+            config_dict = json.load(f)
+    except FileNotFoundError:
+        logger.warning(f"Config file not found at {config_file}. Using default values.")
+        config_dict = {}
+
+    ai_config = config_dict.get('AI', {})
+    ai = AIConfig(
+        provider=ai_config.get('provider', 'openai'),
+        model_id=ai_config.get('model_id', 'gpt-3.5-turbo'),
+        max_tokens=ai_config.get('max_tokens', 300),
+        temperature=ai_config.get('temperature', 0.3),
+        user_prompt=ai_config.get('user_prompt', 'Generate a concise and informative commit message based on the following git diff:\n\n{diff}\n\nThe commit message should:\n1. Start with a summary in imperative mood\n2. Explain the \'why\' behind changes, when possible. Don\'t make anything up.\n3. Keep the summary under 50 characters\n4. Use bullet points for multiple changes'),
+        system_prompt=ai_config.get('system_prompt', '')
+    )
+
+    aws_config = config_dict.get('AWS', {})
+    aws = AWSConfig(profile_name=aws_config.get('profile_name', 'default')) if aws_config else None
+
+    openai_config = config_dict.get('OpenAI', {})
+    openai = OpenAIConfig(api_key=openai_config.get('api_key', '')) if openai_config else None
+
+    config = Config(ai=ai, aws=aws, openai=openai)
+    validate_config(config)
+    return config
+
+def validate_config(config: Config):
+    if config.ai.provider not in ["aws-bedrock", "openai"]:
+        raise ValueError(f"Invalid AI provider: {config.ai.provider}")
+    
+    if config.ai.max_tokens <= 0:
+        raise ValueError("max_tokens must be a positive integer")
+    
+    if not 0 <= config.ai.temperature <= 1:
+        raise ValueError("temperature must be between 0 and 1")
+    
+    if config.ai.provider == "aws-bedrock" and not config.aws:
+        raise ValueError("AWS configuration is required when using aws-bedrock provider")
+    
+    if config.ai.provider == "openai" and not config.openai:
+        raise ValueError("OpenAI configuration is required when using openai provider")
+    
+    if config.ai.provider == "openai" and not config.openai.api_key:
+        if not os.environ.get("OPENAI_API_KEY"):
+            raise ValueError("OpenAI API key is required. Set it in the config file or as an environment variable.")
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Load configuration
-config = configparser.ConfigParser()
-config_file = Path.home() / '.git-commit-message-config.ini'
-if config_file.exists():
-    config.read(config_file)
-else:
-    logger.warning(f"Config file not found at {config_file}. Using default values.")
+# Load configuration from JSON instead of INI
+config_file = Path.home() / '.git-commit-message-generator-config.json'
+if not config_file.exists():
+    config_file = Path.home() / '.git-commit-message-generator-config.json'
 
-AWS_PROFILE = config.get('AWS', 'profile_name', fallback='default')
-MODEL_ID = config.get('Claude', 'model_id', fallback='anthropic.claude-v2')
+try:
+    with open(config_file, 'r') as f:
+        config = json.load(f)
+except FileNotFoundError:
+    logger.warning(f"Config file not found at {config_file}. Using default values.")
+    config = {}
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Load and validate configuration
+config_file = Path.home() / '.git-commit-message-config.json'
+config = load_and_validate_config(config_file)
 
 def get_git_diff():
     try:
@@ -30,32 +110,70 @@ def get_git_diff():
         logger.error(f"Failed to get git diff: {e}")
         return None
 
-def generate_commit_message_claude(diff):
+def generate_commit_message(diff):
+    if config.ai.provider == 'aws-bedrock':
+        return generate_commit_message_bedrock(diff)
+    elif config.ai.provider == 'openai':
+        return generate_commit_message_openai(diff)
+    else:
+        logger.error(f"Unsupported AI provider: {config.ai.provider}")
+        return None
+
+def generate_commit_message_bedrock(diff):
     try:
-        session = boto3.Session(profile_name=AWS_PROFILE)
+        import boto3
+        session = boto3.Session(profile_name=config.aws.profile_name)
         bedrock = session.client('bedrock-runtime')
         
         messages = [
-            {"role": "user", "content": f"Generate a concise and informative commit message based on the following git diff:\n\n{diff}\n\nThe commit message should:\n1. Start with a summary in imperative mood\n2. Explain the 'why' behind changes, when possible. Don't make anything up.\n3. Keep the summary under 50 characters\n4. Use bullet points for multiple changes"}
+            {"role": "user", "content": config.ai.user_prompt.format(diff=diff)}
         ]
         
         body = json.dumps({
             "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 300,
+            "max_tokens": config.ai.max_tokens,
             "messages": messages,
-            "temperature": 0.3,
+            "temperature": config.ai.temperature,
             "top_p": 1,
         })
         
         response = bedrock.invoke_model(
-            modelId=MODEL_ID,
+            modelId=config.ai.model_id,
             body=body
         )
         
         response_body = json.loads(response['body'].read())
         return response_body['content'][0]['text']
+    except ImportError:
+        logger.error("boto3 is required for AWS Bedrock. Install it with 'pip install boto3'")
+        return None
     except Exception as e:
-        logger.error(f"Failed to generate commit message: {e}")
+        logger.error(f"Failed to generate commit message with AWS Bedrock: {e}")
+        return None
+
+def generate_commit_message_openai(diff):
+    try:
+        import openai
+        openai.api_key = config.openai.api_key or os.environ.get("OPENAI_API_KEY")
+        
+        messages = [
+            {"role": "system", "content": config.ai.system_prompt},
+            {"role": "user", "content": config.ai.user_prompt.format(diff=diff)}
+        ]
+        
+        response = openai.ChatCompletion.create(
+            model=config.ai.model_id,
+            messages=messages,
+            max_tokens=config.ai.max_tokens,
+            temperature=config.ai.temperature,
+        )
+        
+        return response.choices[0].message['content'].strip()
+    except ImportError:
+        logger.error("openai is required for OpenAI. Install it with 'pip install openai'")
+        return None
+    except Exception as e:
+        logger.error(f"Failed to generate commit message with OpenAI: {e}")
         return None
 
 def update_commit_message(file_path, new_message):
@@ -73,7 +191,7 @@ if __name__ == '__main__':
         commit_msg_file = sys.argv[1]
         diff = get_git_diff()
         if diff:
-            commit_message = generate_commit_message_claude(diff)
+            commit_message = generate_commit_message(diff)
             if commit_message:
                 print(commit_message)
                 update_commit_message(commit_msg_file, commit_message)
@@ -83,17 +201,3 @@ if __name__ == '__main__':
             logger.warning("No diff found. Skipping commit message generation.")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
-
-# To set up as a pre-commit hook:
-# 1. Save this script as .git/hooks/prepare-commit-msg
-# 2. Make it executable: chmod +x .git/hooks/prepare-commit-msg
-# 3. Ensure you have the required Python packages installed:
-#    pip install boto3 configparser
-
-# Create a config file at ~/.git-commit-message-config.ini with the following content:
-# [AWS]
-# profile_name = your_sso_profile_name
-#
-# [Claude]
-# model_id = anthropic.claude-3-5-sonnet-20240620-v1:0
-
