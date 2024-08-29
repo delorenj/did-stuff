@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+import sys
+from pathlib import Path
+from src.commit_message_generator import load_and_validate_config, main, CONFIG_FILENAME
+
+if __name__ == '__main__':
+    config_file = Path(__file__).resolve().parents[2] / CONFIG_FILENAME
+    if not config_file.exists():
+        config_file = Path.home() / CONFIG_FILENAME
+    config = load_and_validate_config(config_file)
+    
+    main(config, sys.argv[1])
