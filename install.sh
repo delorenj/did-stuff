@@ -28,7 +28,20 @@ echo -e "${YELLOW}Installing required Python packages...${NC}"
 pip3 install -q --no-cache-dir -r requirements.txt
 
 # Copy configuration file
-CONFIG_FILE="$HOME/.git-commit-message-generator-config.json"
+echo -e "${YELLOW}Where would you like to install the configuration file?${NC}"
+echo "1) Locally in the project root"
+echo "2) Globally in your home directory"
+read -p "Choose an option (1/2): " config_location_choice
+
+if [ "$config_location_choice" = "1" ]; then
+    CONFIG_FILE="$(pwd)/.git-commit-message-generator-config.json"
+elif [ "$config_location_choice" = "2" ]; then
+    CONFIG_FILE="$HOME/.git-commit-message-generator-config.json"
+else
+    echo -e "${YELLOW}Invalid choice. Defaulting to global installation.${NC}"
+    CONFIG_FILE="$HOME/.git-commit-message-generator-config.json"
+fi
+
 if [ ! -f "$CONFIG_FILE" ]; then
     echo -e "${YELLOW}Creating configuration file...${NC}"
     cp git-config-message-generator-config.example.json "$CONFIG_FILE"
