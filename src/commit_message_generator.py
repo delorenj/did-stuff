@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
-
-import sys
-import subprocess
 import json
 import logging
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Literal, Optional
 import os
+import subprocess
+
 
 @dataclass
 class AIConfig:
@@ -92,7 +90,7 @@ def get_git_diff() -> Optional[str]:
         logger.error(f"Failed to get git diff: {e}")
         return None
 
-def generate_commit_message(diff: str) -> Optional[str]:
+def generate_commit_message(config: Config, diff: str) -> Optional[str]:
     generator = {
         'aws-bedrock': generate_commit_message_bedrock,
         'openai': generate_commit_message_openai
@@ -102,9 +100,9 @@ def generate_commit_message(diff: str) -> Optional[str]:
         logger.error(f"Unsupported AI provider: {config.ai.provider}")
         return None
     
-    return generator(diff)
+    return generator(config, diff)
 
-def generate_commit_message_bedrock(diff: str) -> Optional[str]:
+def generate_commit_message_bedrock(config: Config, diff: str) -> Optional[str]:
     try:
         import boto3
     except ImportError:
@@ -138,7 +136,7 @@ def generate_commit_message_bedrock(diff: str) -> Optional[str]:
         logger.error(f"Failed to generate commit message with AWS Bedrock: {e}")
         return None
 
-def generate_commit_message_openai(diff: str) -> Optional[str]:
+def generate_commit_message_openai(config: Config, diff: str) -> Optional[str]:
     try:
         from openai import OpenAI
     except ImportError:
@@ -182,29 +180,15 @@ def update_commit_message(file_path: str, new_message: str) -> None:
     except IOError as e:
         logger.error(f"Failed to update commit message file: {e}")
 
-def main() -> None:
-    try:
-        commit_msg_file = sys.argv[1]
-        diff = get_git_diff()
-        if diff:
-            commit_message = generate_commit_message(diff)
-            if commit_message:
-                print(commit_message)
-                update_commit_message(commit_msg_file, commit_message)
-            else:
-                logger.warning("No commit message generated. Using default message.")
-        else:
-            logger.warning("No diff found. Skipping commit message generation.")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
 
-if __name__ == '__main__':
-    # Load and validate configuration
-    logger.info("Checking for configuration file in project directory...")
-    config_file = Path(__file__).resolve().parents[2] / CONFIG_FILENAME
-    if not config_file.exists():
-        logger.info("Checking for configuration file in user home directory...")
-        config_file = Path.home() / CONFIG_FILENAME
-    config = load_and_validate_config(config_file)
-    
-    main()
+def main(config: Config, commit_msg_file: str) -> None:
+    diff = get_git_diff()
+    if diff:
+        commit_message = generate_commit_message(config, diff)
+        if commit_message:
+            print(commit_message)
+            update_commit_message(commit_msg_file, commit_message)
+        else:
+            logger.warning("No commit message generated. Using default message.")
+    else:
+        logger.warning("No diff found. Skipping commit message generation.")
