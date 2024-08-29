@@ -32,6 +32,15 @@ class Config:
     aws: Optional[AWSConfig] = None
     openai: Optional[OpenAIConfig] = None
 
+# Constants
+DEFAULT_USER_PROMPT = """Generate a concise and informative commit message based on the following git diff:{diff}"""
+DEFAULT_SYSTEM_PROMPT = """You are an AI assistant helping to generate Git commit messages."""
+CONFIG_FILENAME = '.git-commit-message-generator-config.json'
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 def load_and_validate_config(config_file: Path) -> Config:
     try:
         with config_file.open('r') as f:
@@ -54,7 +63,7 @@ def load_and_validate_config(config_file: Path) -> Config:
     aws = AWSConfig(profile_name=aws_config['profile_name']) if aws_config else None
 
     openai_config = config_dict.get('OpenAI')
-    openai = OpenAIConfig(api_key=openai_config['api_key']) if openai_config else None
+    openai = OpenAIConfig(api_key=openai_config['api_key']) if openai_config and 'api_key' in openai_config else None
 
     config = Config(ai=ai, aws=aws, openai=openai)
     validate_config(config)
@@ -72,12 +81,9 @@ def validate_config(config: Config) -> None:
     
     if config.ai.provider == "aws-bedrock" and not config.aws:
         raise ValueError("AWS configuration is required when using aws-bedrock provider")
-    
-    if config.ai.provider == "openai" and not config.openai:
-        raise ValueError("OpenAI configuration is required when using openai provider")
-    
-    if config.ai.provider == "openai" and not (config.openai.api_key or os.environ.get("OPENAI_API_KEY")):
-        raise ValueError("OpenAI API key is required. Set it in the config file or as an environment variable.")
+        
+    if config.ai.provider == "openai" and not config.openai and not os.environ.get("OPENAI_API_KEY"):
+        logger.warning("OpenAI API key is not set in config or environment. Make sure to set it before generating commit messages.")
 
 def get_git_diff() -> Optional[str]:
     try:
@@ -134,27 +140,34 @@ def generate_commit_message_bedrock(diff: str) -> Optional[str]:
 
 def generate_commit_message_openai(diff: str) -> Optional[str]:
     try:
-        import openai
+        from openai import OpenAI
     except ImportError:
         logger.error("openai is required for OpenAI. Install it with 'pip install openai'")
         return None
 
     try:
-        openai.api_key = config.openai.api_key or os.environ.get("OPENAI_API_KEY")
+        api_key = config.openai.api_key if config.openai else None
+        api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        
+        if not api_key:
+            logger.error("OpenAI API key is not set. Please set it in the config file or as an environment variable.")
+            return None
+
+        client = OpenAI(api_key=api_key)
         
         messages = [
             {"role": "system", "content": config.ai.system_prompt},
             {"role": "user", "content": config.ai.user_prompt.format(diff=diff)}
         ]
         
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model=config.ai.model_id,
             messages=messages,
             max_tokens=config.ai.max_tokens,
             temperature=config.ai.temperature,
         )
         
-        return response.choices[0].message['content'].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         logger.error(f"Failed to generate commit message with OpenAI: {e}")
         return None
@@ -187,15 +200,11 @@ def main() -> None:
 
 if __name__ == '__main__':
     # Load and validate configuration
-    config_file = Path.home() / '.git-commit-message-config.json'
+    logger.info("Checking for configuration file in project directory...")
+    config_file = Path(__file__).resolve().parents[2] / CONFIG_FILENAME
+    if not config_file.exists():
+        logger.info("Checking for configuration file in user home directory...")
+        config_file = Path.home() / CONFIG_FILENAME
     config = load_and_validate_config(config_file)
     
-    # Set up logging
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger(__name__)
-    
     main()
-
-# Constants
-DEFAULT_USER_PROMPT = """Generate a concise and informative commit message based on the following git diff:{diff}"""
-DEFAULT_SYSTEM_PROMPT = """You are an AI assistant helping to generate Git commit messages."""
