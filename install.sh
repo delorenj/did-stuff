@@ -8,6 +8,13 @@ ROCKET='🚀'
 SPARKLES='✨'
 CHECK='✅'
 
+# Function to ensure valid JSON in config file
+ensure_valid_json() {
+    if [ ! -s "$CONFIG_FILE" ] || ! jq empty "$CONFIG_FILE" 2>/dev/null; then
+        echo '{"AI":{},"OpenAI":{},"AWS":{}}' > "$CONFIG_FILE"
+    fi
+}
+
 echo -e "${YELLOW}${ROCKET} Installing the DeLoOps Did Stuff hook! ${ROCKET}${NC}"
 
 # Check for Python and pip
@@ -28,36 +35,73 @@ if [ ! -f "$CONFIG_FILE" ]; then
     echo -e "${GREEN}${CHECK} Configuration file created at $CONFIG_FILE${NC}"
 else
     echo -e "${GREEN}${CHECK} Configuration file already exists${NC}"
+    echo -e "${YELLOW}Do you want to recreate the configuration file? (y/N)${NC}"
+    read -p "> " recreate_config
+    if [[ $recreate_config =~ ^[Nn]$ ]]; then
+        echo -e "${GREEN}${CHECK} Keeping existing configuration file${NC}"
+        echo "Current configuration file contents:"
+        cat "$CONFIG_FILE"
+        echo "Configuration file path: $CONFIG_FILE"
+    fi
 fi
 
 # Interactive configuration
-echo -e "${YELLOW}Let's set up your AI provider:${NC}"
-echo -e "1) OpenAI"
-echo -e "2) AWS Bedrock"
-read -p "Choose your provider (1/2): " provider_choice
+if [[ $recreate_config =~ ^[Yy]$ ]]; then
+    echo -e "${YELLOW}Let's set up your AI provider:${NC}"
+    echo -e "1) OpenAI"
+    echo -e "2) AWS Bedrock"
+    read -p "Choose your provider (1/2): " provider_choice
 
-if [ "$provider_choice" = "1" ]; then
-    read -p "Enter your OpenAI API key: " openai_key
-    # Update config file with OpenAI key
-elif [ "$provider_choice" = "2" ]; then
-    if command -v aws &> /dev/null; then
-        echo -e "${YELLOW}Available AWS profiles:${NC}"
-        aws configure list-profiles | cat -n
-        echo -e "${YELLOW}Enter the number of the profile you want to use, or type a new profile name:${NC}"
-        read -p "> " aws_profile_choice
-        if [[ "$aws_profile_choice" =~ ^[0-9]+$ ]]; then
-            aws_profile=$(aws configure list-profiles | sed -n "${aws_profile_choice}p")
+    if [ "$provider_choice" = "1" ]; then
+        if [ -n "$OPENAI_API_KEY" ]; then
+            echo -e "${GREEN}${CHECK} OpenAI API key found in environment${NC}"
+            openai_key="$OPENAI_API_KEY"
         else
-            aws_profile=$aws_profile_choice
+            read -p "Enter your OpenAI API key: " openai_key
+            echo -e "${YELLOW}How would you like to store your OpenAI API key?${NC}"
+            echo "1) Add to config file"
+            echo "2) Add to shell profile"
+            read -p "Choose an option (1/2): " key_storage_choice
+
+            if [ "$key_storage_choice" = "1" ]; then
+                # Update config file with OpenAI key
+                ensure_valid_json
+                jq '.AI.provider = "openai" | .AI.model_id = "gpt-3.5-turbo" | .OpenAI.api_key = $key' --arg key "$openai_key" "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+                echo -e "${GREEN}${CHECK} OpenAI API key added to config file${NC}"
+            elif [ "$key_storage_choice" = "2" ]; then
+                # Add to shell profile
+                shell_profile="$HOME/.$(basename $SHELL)rc"
+                echo "export OPENAI_API_KEY='$openai_key'" >> "$shell_profile"
+                echo -e "${GREEN}${CHECK} OpenAI API key added to $shell_profile${NC}"
+                echo -e "${YELLOW}Please restart your terminal or run 'source $shell_profile' to apply changes${NC}"
+            else
+                echo -e "${YELLOW}Invalid choice. OpenAI API key will not be stored.${NC}"
+            fi
         fi
-        echo -e "${GREEN}Selected AWS profile: $aws_profile${NC}"
+        echo -e "${GREEN}${CHECK} OpenAI configuration updated${NC}"
+    elif [ "$provider_choice" = "2" ]; then
+        if command -v aws &> /dev/null; then
+            echo -e "${YELLOW}Available AWS profiles:${NC}"
+            aws configure list-profiles | cat -n
+            echo -e "${YELLOW}Enter the number of the profile you want to use, or type a new profile name:${NC}"
+            read -p "> " aws_profile_choice
+            if [[ "$aws_profile_choice" =~ ^[0-9]+$ ]]; then
+                aws_profile=$(aws configure list-profiles | sed -n "${aws_profile_choice}p")
+            else
+                aws_profile=$aws_profile_choice
+            fi
+            echo -e "${GREEN}Selected AWS profile: $aws_profile${NC}"
+        else
+            read -p "Enter your AWS profile name: " aws_profile
+        fi
+        # Update config file with AWS profile
+        ensure_valid_json
+        jq '.AI.provider = "aws-bedrock" | .AI.model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0" | .AWS.profile_name = $profile' --arg profile "$aws_profile" "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo -e "${GREEN}${CHECK} AWS Bedrock configuration updated${NC}"
     else
-        read -p "Enter your AWS profile name: " aws_profile
+        echo -e "${YELLOW}Invalid choice. Exiting.${NC}"
+        exit 1
     fi
-    # Update config file with AWS profile
-else
-    echo -e "${YELLOW}Invalid choice. Exiting.${NC}"
-    exit 1
 fi
 
 # Set up Git hook
