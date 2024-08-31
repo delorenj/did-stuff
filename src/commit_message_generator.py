@@ -31,7 +31,7 @@ class Config:
     openai: Optional[OpenAIConfig] = None
 
 # Constants
-DEFAULT_USER_PROMPT = """Generate a concise and informative commit message based on the following git diff:{diff}"""
+DEFAULT_USER_PROMPT = """Generate a concise and informative commit message based on the following git diff:{diff} : output ONLY the commit message, no other text or characters"""
 DEFAULT_SYSTEM_PROMPT = """You are an AI assistant helping to generate Git commit messages."""
 CONFIG_FILENAME = '.git-commit-message-generator-config.json'
 
