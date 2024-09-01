@@ -49,6 +49,12 @@ clean:
 	@rm -rf .pytest_cache
 	@rm -f $(CONFIG_FILE)
 
+# Generate codebase analysis
+.PHONY: analyze
+analyze:
+	@echo "Generating codebase analysis..."
+	@code2prompt --path . --template c2p_templates/codebase-analysis.j2 --filter "src/**,tests/**,.circleci/**,README.md,Makefile,requirements.txt,pyproject.toml,install-cli.sh,*.json" --exclude "**/__pycache__/**,**/.pytest_cache/**,.git/**" --output codebase-analysis.md
+
 # Show help
 .PHONY: help
 help:
