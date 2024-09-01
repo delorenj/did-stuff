@@ -2,6 +2,9 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@4.1.0
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
 jobs:
@@ -35,12 +38,20 @@ jobs:
           name: Run Tests
           command: |
             . venv/bin/activate
-            pytest tests/
+            pytest --cov=./ --cov-report=xml
+      - store_artifacts:
+          path: coverage.xml
+          destination: coverage-report
+      - codecov/upload:
+          file: coverage.xml
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  test-workflow: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  test-workflow:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+              ignore: main
+          context: []
