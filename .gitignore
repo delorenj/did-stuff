@@ -55,6 +55,7 @@ Thumbs.db
 
 # Test coverage
 .coverage
+coverage.xml
 htmlcov/
 
 # Jupyter Notebooks
