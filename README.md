@@ -1,15 +1,11 @@
 # 🤖💬 git commit -m "Did stuff"
 
-![Commit Like a Boss](https://img.shields.io/badge/commit%20like%20a-boss-brightgreen)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/delorenj/did-stuff/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/delorenj/did-stuff/tree/main)
+[![codecov](https://codecov.io/github/delorenj/did-stuff/graph/badge.svg?token=HVFQOW9TC6)](https://codecov.io/github/delorenj/did-stuff)
 ![AI Powered](https://img.shields.io/badge/powered%20by-skynet-blue)
-![Works on my Machine](https://img.shields.io/badge/works%20on-my%20machine-red)
-![Tests? We got 'em](https://img.shields.io/badge/tests-probably%20pass-yellow)
 
 > Because let's face it, your commit messages suck. Time to let the machines take over.
 
-<p style="font-size: 0.8em; color: #888; font-style: italic;">Ok, but for real, the build status...</p>
-
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/delorenj/did-stuff/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/delorenj/did-stuff/tree/main)
 
 **Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
 
