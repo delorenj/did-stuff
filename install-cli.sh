@@ -155,14 +155,25 @@ configure_aws_bedrock() {
 
 # Function to set up Git hook
 setup_git_hook() {
-    if git rev-parse --git-dir > /dev/null 2>&1; then
-        echo -e "${YELLOW}Setting up Git hook...${NC}"
-        cp src/prepare-commit-msg "$(git rev-parse --git-dir)/hooks/"
-        chmod +x "$(git rev-parse --git-dir)/hooks/prepare-commit-msg"
-        echo -e "${GREEN}${CHECK} Git hook installed successfully${NC}"
+    local git_dir="$1"
+    if [ -z "$git_dir" ]; then
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            git_dir=$(git rev-parse --git-dir)
+        else
+            echo -e "${YELLOW}Not in a Git repository. Please provide a path to an existing Git repository.${NC}"
+            return 1
+        fi
+    elif [ ! -d "$git_dir/.git" ]; then
+        echo -e "${YELLOW}The provided path is not a valid Git repository.${NC}"
+        return 1
     else
-        echo -e "${YELLOW}Not in a Git repository. You can manually set up the Git hook later.${NC}"
+        git_dir="$git_dir/.git"
     fi
+
+    echo -e "${YELLOW}Setting up Git hook...${NC}"
+    cp src/prepare-commit-msg "$git_dir/hooks/"
+    chmod +x "$git_dir/hooks/prepare-commit-msg"
+    echo -e "${GREEN}${CHECK} Git hook installed successfully in $git_dir${NC}"
 }
 
 # Main installation process
@@ -171,10 +182,15 @@ main() {
 
     check_and_install_dependencies
     setup_config_file
-    setup_git_hook
+
+    if [ $# -eq 1 ]; then
+        setup_git_hook "$1"
+    else
+        setup_git_hook
+    fi
 
     echo -e "${GREEN}${SPARKLES} Installation complete! Go do stuff! ${SPARKLES}${NC}"
 }
 
 # Run the main installation process
-main
+main "$@"
