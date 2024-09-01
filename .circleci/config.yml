@@ -27,7 +27,8 @@ jobs:
           command: |
             . venv/bin/activate
             pytest --cov tests
-      - codecov/upload
+      - codecov/upload:
+          file: coverage.xml
 
 workflows:
   test-workflow:
