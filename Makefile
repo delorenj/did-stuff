@@ -32,13 +32,13 @@ test:
 .PHONY: lint
 lint:
 	@echo "Linting Python code..."
-	@flake8 src tests
+	@ruff check .
 
 # Format the Python code
 .PHONY: format
 format:
 	@echo "Formatting Python code..."
-	@black src tests
+	@ruff format .
 
 # Clean up temporary files and caches
 .PHONY: clean
