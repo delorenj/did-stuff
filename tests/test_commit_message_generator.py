@@ -66,7 +66,7 @@ def test_get_git_diff(mock_check_output):
     assert get_git_diff() == "Test diff"
 
 
-@patch("src.message_generator.generate_message_openai")
+@patch("src.commit_message_generator.generate_message_openai")
 def test_generate_message(mock_generate_openai, sample_config):
     mock_generate_openai.return_value = "Test commit message"
     result = generate_message(sample_config, "Test diff")
@@ -144,9 +144,9 @@ def test_main(tmp_path):
     commit_msg_file = tmp_path / "commit_msg"
     commit_msg_file.write_text("Original message")
 
-    with patch("src.message_generator.get_git_diff", return_value="Test diff"):
+    with patch("src.commit_message_generator.get_git_diff", return_value="Test diff"):
         with patch(
-            "src.message_generator.generate_message",
+            "src.commit_message_generator.generate_message",
             return_value="New commit message",
         ):
             main(config, str(commit_msg_file))
