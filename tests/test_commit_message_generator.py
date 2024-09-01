@@ -152,6 +152,3 @@ def test_main(tmp_path):
             main(config, str(commit_msg_file))
 
     assert commit_msg_file.read_text().startswith("New commit message")
-
-
-# Add more tests for other functions as needed
