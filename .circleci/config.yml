@@ -38,7 +38,7 @@ jobs:
           name: Run Tests
           command: |
             . venv/bin/activate
-            pytest --cov=./ --cov-report=xml
+            pytest tests/
       - store_artifacts:
           path: coverage.xml
           destination: coverage-report
