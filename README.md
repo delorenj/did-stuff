@@ -51,10 +51,10 @@ The install script will create a config file at `~/.git-commit-message-generator
 ```json
 {
   "AI": {
-    "provider": "openai", // or "aws-bedrock" if you're feeling adventurous
-    "model_id": "gpt-3.5-turbo", // or "anthropic.claude-v2" for AWS
-    "max_tokens": 300, // adjust for verbosity or brevity
-    "temperature": 0.3 // higher for chaos, lower for boringness
+    "provider": "openai",
+    "model_id": "gpt-3.5-turbo",
+    "max_tokens": 300,
+    "temperature": 0.3
   }
 }
 ```
@@ -93,4 +93,4 @@ I figure we have at least one more good year left in us before the corporate wor
 
 ---
 
-Remember, in the grand scheme of things, we're all just sacks of unsanitary meat trying to make sense of a bunch of 1s and 0s. Might as well let the machines help us along the way.
+Remember, in the grand scheme of things, we're all be out of jobs in a few years.
