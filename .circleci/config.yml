@@ -11,7 +11,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - pip-packages-{{ checksum "requirements.txt" }}
+            - pip-packages-v1-{{ checksum "requirements.txt" }}
       - run:
           name: Install Dependencies
           command: |
@@ -21,7 +21,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: pip-packages-{{ checksum "requirements.txt" }}
+          key: pip-packages-v1-{{ checksum "requirements.txt" }}
       - run:
           name: Run Tests
           command: |
