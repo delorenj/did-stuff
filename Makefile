@@ -52,13 +52,19 @@ clean:
 
 .PHONY: prompt-and-tag
 prompt-and-tag:
-	@echo "Convert codebase to prompt and tag for LLM thread"
-	@code2prompt --path . | head -n30
 	$(eval TAG_NAME := llm-snapshot-$(shell date +%Y%m%d-%H%M%S))
-	@git tag -a -m "$(TAG_NAME)" $(TAG_NAME)
-	@git push origin $(TAG_NAME)
-	@echo "Created and pushed tag: $(TAG_NAME)"
-	@echo $(TAG_NAME) | pbcopy
+	@echo "\033[1;36m🚀 Converting Codebase to Prompt and Tagging for LLM 🚀\033[0m"
+	@code2prompt --no-codeblock -s --path . > /tmp/${TAG_NAME}.txt
+	@git tag -a -m "$(TAG_NAME)" $(TAG_NAME) > /dev/null 2>&1
+	@git push origin $(TAG_NAME) > /dev/null 2>&1
+	@echo "\033[1;32m✅ Created and pushed tag: \033[1;33m$(TAG_NAME)\033[0m"
+	@echo
+	@echo "\033[1;35mNext Steps:\033[0m"
+	@echo "  1. 📋 Paste clipboard into LLM thread content"
+	@echo "  2. 🏷️  (Optional) Copy the following to label content version"
+	@echo
+	@echo "     \033[1;34m\`Full Source: $(TAG_NAME)\`\033[0m"
+	@echo
 
 
 # Show help
