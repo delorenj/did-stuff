@@ -66,15 +66,29 @@ prompt-and-tag:
 	@echo "     \033[1;34m\`Full Source: $(TAG_NAME)\`\033[0m"
 	@echo
 
+# Print a summary of recent changes
+.PHONY: summary
+summary:
+	@echo "Generating summary of recent changes..."
+	@$(PYTHON) src/print_summary.py
+	
+# Set up development environment
+.PHONY: dev-setup
+dev-setup:
+	@echo "Setting up development environment..."
+	@$(PIP) install -e ".[dev]"
+	@echo "Development environment setup complete."
 
 # Show help
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  install  - Install the cli tool"
+	@echo "  install     - Install the cli tool"
 	@echo "  install-hook - Install the hook to your local git repo"
-	@echo "  test     - Run the test suite"
-	@echo "  lint     - Lint the Python code"
-	@echo "  format   - Format the Python code"
-	@echo "  clean    - Clean up temporary files and caches"
-	@echo "  help     - Show this help message"
+	@echo "  dev-setup   - Set up development environment"
+	@echo "  test        - Run the test suite"
+	@echo "  lint        - Lint the Python code"
+	@echo "  format      - Format the Python code"
+	@echo "  clean       - Clean up temporary files and caches"
+	@echo "  summary     - Print a summary of recent changes"
+	@echo "  help        - Show this help message"
