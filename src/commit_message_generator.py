@@ -1,10 +1,10 @@
 import json
 import logging
-from pathlib import Path
-from dataclasses import dataclass
-from typing import Literal, Optional
 import os
 import subprocess
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Literal, Optional
 
 
 @dataclass
@@ -37,17 +37,13 @@ class Config:
 # Constants
 DEFAULT_USER_PROMPT = (
     "Generate a concise and informative commit message based on the following "
-    "git diff:{diff} : output ONLY the commit message."
+    "git diff:{diff} :: Structure: Short summary describing the changes followed by a bulleted list of changes. :: output ONLY the commit message."
 )
-DEFAULT_SYSTEM_PROMPT = (
-    "You are an AI assistant helping to generate Git commit messages."
-)
+DEFAULT_SYSTEM_PROMPT = "You are an AI assistant helping to generate Git commit messages."
 CONFIG_FILENAME = ".git-commit-message-generator-config.json"
 
 # Set up logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -56,9 +52,7 @@ def load_and_validate_config(config_file: Path) -> Config:
         with config_file.open("r") as f:
             config_dict = json.load(f)
     except FileNotFoundError:
-        logger.warning(
-            f"Config file not found at {config_file}. Using default values."
-        )
+        logger.warning(f"Config file not found at {config_file}. Using default values.")
         config_dict = {}
 
     ai_config = config_dict.get("AI", {})
@@ -72,18 +66,10 @@ def load_and_validate_config(config_file: Path) -> Config:
     )
 
     aws_config = config_dict.get("AWS")
-    aws = (
-        AWSConfig(profile_name=aws_config["profile_name"])
-        if aws_config
-        else None
-    )
+    aws = AWSConfig(profile_name=aws_config["profile_name"]) if aws_config else None
 
     openai_config = config_dict.get("OpenAI")
-    openai = (
-        OpenAIConfig(api_key=openai_config["api_key"])
-        if openai_config and "api_key" in openai_config
-        else None
-    )
+    openai = OpenAIConfig(api_key=openai_config["api_key"]) if openai_config and "api_key" in openai_config else None
 
     config = Config(ai=ai, aws=aws, openai=openai)
     validate_config(config)
@@ -101,15 +87,9 @@ def validate_config(config: Config) -> None:
         raise ValueError("temperature must be between 0 and 1")
 
     if config.ai.provider == "aws-bedrock" and not config.aws:
-        raise ValueError(
-            "AWS configuration is required when using aws-bedrock provider"
-        )
+        raise ValueError("AWS configuration is required when using aws-bedrock provider")
 
-    if (
-        config.ai.provider == "openai"
-        and not config.openai
-        and not os.environ.get("OPENAI_API_KEY")
-    ):
+    if config.ai.provider == "openai" and not config.openai and not os.environ.get("OPENAI_API_KEY"):
         logger.warning(
             "OpenAI API key is not set in config or environment. "
             "Make sure to set it before generating commit messages."
@@ -141,22 +121,14 @@ def generate_message_bedrock(config: Config, diff: str) -> Optional[str]:
     try:
         import boto3
     except ImportError:
-        logger.error(
-            "boto3 is required for AWS Bedrock. "
-            "Install it with 'pip install boto3'"
-        )
+        logger.error("boto3 is required for AWS Bedrock. " "Install it with 'pip install boto3'")
         return None
 
     try:
         session = boto3.Session(profile_name=config.aws.profile_name)
         bedrock = session.client("bedrock-runtime")
 
-        messages = [
-            {
-                "role": "user",
-                "content": config.ai.user_prompt.format(diff=diff)
-            }
-        ]
+        messages = [{"role": "user", "content": config.ai.user_prompt.format(diff=diff)}]
 
         body = json.dumps(
             {
@@ -173,9 +145,7 @@ def generate_message_bedrock(config: Config, diff: str) -> Optional[str]:
         response_body = json.loads(response["body"].read())
         return response_body["content"][0]["text"]
     except Exception as e:
-        logger.error(
-            f"Failed to generate commit message with AWS Bedrock: {e}"
-        )
+        logger.error(f"Failed to generate commit message with AWS Bedrock: {e}")
         return None
 
 
@@ -183,10 +153,7 @@ def generate_message_openai(config: Config, diff: str) -> Optional[str]:
     try:
         from openai import OpenAI
     except ImportError:
-        logger.error(
-            "openai is required for OpenAI. "
-            "Install it with 'pip install openai'"
-        )
+        logger.error("openai is required for OpenAI. " "Install it with 'pip install openai'")
         return None
 
     try:
@@ -195,8 +162,7 @@ def generate_message_openai(config: Config, diff: str) -> Optional[str]:
 
         if not api_key:
             logger.error(
-                "OpenAI API key is not set. Please set it in the config file "
-                "or as an environment variable."
+                "OpenAI API key is not set. Please set it in the config file " "or as an environment variable."
             )
             return None
 
@@ -204,10 +170,7 @@ def generate_message_openai(config: Config, diff: str) -> Optional[str]:
 
         messages = [
             {"role": "system", "content": config.ai.system_prompt},
-            {
-                "role": "user",
-                "content": config.ai.user_prompt.format(diff=diff)
-            },
+            {"role": "user", "content": config.ai.user_prompt.format(diff=diff)},
         ]
 
         response = client.chat.completions.create(
@@ -234,6 +197,18 @@ def update_message(file_path: str, new_message: str) -> None:
         logger.error(f"Failed to update commit message file: {e}")
 
 
+def generate_and_print_message(config: Config) -> None:
+    diff = get_git_diff()
+    if diff:
+        commit_message = generate_message(config, diff)
+        if commit_message:
+            print(commit_message)
+        else:
+            logger.warning("No commit message generated.")
+    else:
+        logger.warning("No diff found. Nothing to summarize.")
+
+
 def main(config: Config, commit_msg_file: str) -> None:
     diff = get_git_diff()
     if diff:
@@ -242,7 +217,6 @@ def main(config: Config, commit_msg_file: str) -> None:
             print(commit_message)
             update_message(commit_msg_file, commit_message)
         else:
-            logger.warning("No commit message generated. "
-                           "Using default message.")
+            logger.warning("No commit message generated. " "Using default message.")
     else:
         logger.warning("No diff found. Skipping commit message generation.")

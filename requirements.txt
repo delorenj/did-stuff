@@ -1,7 +1,0 @@
-pytest
-pytest-mock
-pytest-cov
-codecov-cli
-ruff
-openai
-boto3
