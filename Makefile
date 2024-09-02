@@ -49,11 +49,17 @@ clean:
 	@rm -rf .pytest_cache
 	@rm -f $(CONFIG_FILE)
 
-# Generate codebase analysis
-.PHONY: analyze
-analyze:
-	@echo "Generating codebase analysis..."
-	@code2prompt --path . --template c2p_templates/codebase-analysis.j2 --filter "src/**,tests/**,.circleci/**,README.md,Makefile,requirements.txt,pyproject.toml,install-cli.sh,*.json" --exclude "**/__pycache__/**,**/.pytest_cache/**,.git/**" --output codebase-analysis.md
+
+.PHONY: prompt-and-tag
+prompt-and-tag:
+	@echo "Convert codebase to prompt and tag for LLM thread"
+	@code2prompt --path . | head -n30
+	$(eval TAG_NAME := llm-snapshot-$(shell date +%Y%m%d-%H%M%S))
+	@git tag -a -m "$(TAG_NAME)" $(TAG_NAME)
+	@git push origin $(TAG_NAME)
+	@echo "Created and pushed tag: $(TAG_NAME)"
+	@echo $(TAG_NAME) | pbcopy
+
 
 # Show help
 .PHONY: help
