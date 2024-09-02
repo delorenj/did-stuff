@@ -104,17 +104,9 @@ def get_git_diff() -> Optional[str]:
         return None
 
 
-def generate_message(config: Config, diff: str) -> Optional[str]:
-    generator = {
-        "aws-bedrock": generate_message_bedrock,
-        "openai": generate_message_openai,
-    }.get(config.ai.provider)
-
-    if not generator:
-        logger.error(f"Unsupported AI provider: {config.ai.provider}")
-        return None
-
-    return generator(config, diff)
+def generate_message(config: dict, diff: str) -> str:
+    # TODO: Implement message generation logic
+    return "Generated commit message"
 
 
 def generate_message_bedrock(config: Config, diff: str) -> Optional[str]:

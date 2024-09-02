@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "did-stuff"
@@ -22,7 +22,11 @@ dynamic = ["version"]
 dev = ["pytest", "pytest-mock", "pytest-cov", "ruff"]
 
 [project.scripts]
-did-stuff = "did_stuff.cli:main"
+did-stuff = "did_stuff.cli:cli"
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+click = "^8.1.7"
 
 [tool.setuptools_scm]
 write_to = "src/did_stuff/_version.py"
