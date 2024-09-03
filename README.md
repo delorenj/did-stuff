@@ -5,9 +5,6 @@
 </picture>
 </p>
 
-
-# 🤖💬 git commit -m "Did stuff"
-
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/delorenj/did-stuff/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/delorenj/did-stuff/tree/main)
 [![codecov](https://codecov.io/github/delorenj/did-stuff/graph/badge.svg?token=HVFQOW9TC6)](https://codecov.io/github/delorenj/did-stuff)
 ![AI Powered](https://img.shields.io/badge/powered%20by-skynet-blue)
