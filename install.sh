@@ -74,7 +74,10 @@ setup_config_file() {
         echo -e "${GREEN}${CHECK} Configuration file already exists${NC}"
         echo -e "${YELLOW}Do you want to recreate the configuration file? (y/N)${NC}"
         read -p "> " recreate_config
-        if [[ $recreate_config =~ ^[Nn]$ ]]; then
+        if [[ $recreate_config =~ ^[Yy]$ ]]; then
+            cp git-config-message-generator-config.example.json "$CONFIG_FILE"
+            echo -e "${GREEN}${CHECK} Configuration file recreated at $CONFIG_FILE${NC}"
+        else
             echo -e "${GREEN}${CHECK} Keeping existing configuration file${NC}"
             echo "Current configuration file contents:"
             cat "$CONFIG_FILE"

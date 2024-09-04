@@ -1,0 +1,40 @@
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@4.1.0
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - pip-packages-v1-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          paths:
+            - ./venv
+          key: pip-packages-v1-{{ checksum "requirements.txt" }}
+      - run:
+          name: Run Tests
+          command: |
+            . venv/bin/activate
+            pytest --cov tests
+      - codecov/upload:
+          file: coverage.xml
+
+workflows:
+  test-workflow:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore: main
+          context: []
