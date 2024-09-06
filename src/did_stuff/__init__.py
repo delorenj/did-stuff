@@ -1,1 +1,1 @@
-from . import cli, commit_message_generator, config, git_hooks
+from . import cli, config, git_hooks, commit_message_generator
