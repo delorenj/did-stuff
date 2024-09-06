@@ -8,7 +8,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/delorenj/did-stuff/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/delorenj/did-stuff/tree/main)
 [![codecov](https://codecov.io/github/delorenj/did-stuff/graph/badge.svg?token=HVFQOW9TC6)](https://codecov.io/github/delorenj/did-stuff)
 ![AI Powered](https://img.shields.io/badge/powered%20by-skynet-blue)
-
+![made with love for](https://img.shields.io/badge/made%20with%20love%20for-Justworks-blue)
 > Because let's face it, your commit messages suck. Time to let the machines take over.
 
 **Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
