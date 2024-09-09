@@ -14,7 +14,7 @@
 **Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
 
 ## I Present To You...
-The most time efficient commit workflow possible, before we tread into "F*ck it, you just handle it AI - I trust you" territory.
+The most time efficient commit workflow possible, before we tread into "Eh, you just handle it AI - I trust you" territory.
 
 ### This thing here will:
 
@@ -28,7 +28,7 @@ The most time efficient commit workflow possible, before we tread into "F*ck it,
 - 🎭 Supports both AWS Bedrock and OpenAI (because if I release this to the wild, people will complain that my free gift wasn't good enough)
 - 🌈 Generates commit messages that are informative, concise, and will never be "too tired" and just say "Did stuff"
 - 🚀 Comes with a fancy install script (because who doesn't love more automation?)
-- 🧪 Includes tests (they probably work, who knows?)
+- 🧪 Includes tests!
 
 ## Installation
 
@@ -39,12 +39,11 @@ The most time efficient commit workflow possible, before we tread into "F*ck it,
 
 ## Usage
 
-1. Code, like normal. Nothing to see here.
+1. Code
 2. `git add .`
 3. `git commit`
-4. Marvel at the time saved (or weep for the future and the inevitable death of our livelihood)
 
-## Configuration (chooooose your destructor)
+## Configuration
 
 The install script will create a config file at `~/.git-commit-message-generator-config.json`. If you're feeling frisky, you can edit it manually:
 
@@ -83,68 +82,59 @@ If your company uses SSO make sure your session is logged in using `aws sso logi
 }
 ```
 
-## Testing (because we're professionals... sort of)
+## Testing (because we're professionals)
 
-Run `pytest` and cross your fingers. If all tests pass, celebrate! If they fail, well, that's future-you's problem.
+Run `pytest` and cross your fingers.
 
 ## Contributing
 
-Found a bug? Want to add a feature? Pull requests welcome! We're all about that collaborative spirit (at least until the AI overlords deem human collaboration unnecessary).
+Found a bug? Want to add a feature? Pull requests welcome! We're all about that collaborative spirit (at least until the AI entities deem human collaboration unnecessary).
 
 ### Getting Started
 
 1. Fork the repo (it's like adopting a digital pet,
  but with more responsibility)
-2. Clone it locally (bring that pet home)
+2. Clone it locally
 3. Create a new branch: `git checkout -b feature/skynet-integration` or `git checkout -b fix/cyborg-DoD-backdoor`
 4. Make your changes
 5. Write or update tests
 6. Run the test suite
 7. Commit your changes with a clear message (or better yet, dogfood it with this tool)
 8. Push your branch: `git push origin your-branch-name`
-9. Open a pull request and the maintainers will take a look
+9. Open a pull request
 
 ### Contribution Guidelines
 
-- **Be Creative**: We encourage innovative ideas. If you can make this tool predict the future, we're all ears!
+- **Be Creative**: We encourage innovative ideas.
 - **Flexibility First**: Make your features adaptable. It should work whether we're using AWS, OpenAI, or anything else (within reason). Bonus points if we can make it repo-agnostic too!
 - **Documentation**: Update the README or add comments. 
 - **Testing**: Add tests. There really is no excuse anymore not to.
 - **Code Style**: Follow the project's style.
 
-- **Commit Messages**: Write clear messages. Feel free to add your own personality or tone if you want - if you contribute, you earned the right.
+- **Commit Messages**: Whatever
 - **Pull Requests**: Keep them focused. One feature per PR.
 
 ### Feature Requests and Bug Reports
 
-- Use GitHub Issues. It's like a suggestion box, but for code.
-- Describe issues clearly. "It's broken" is not helpful. "Want tO adD supPort for Tonny the JacKRabbit" is both helpful and concerning.
-
-- Label issues appropriately. It helps us pretend we're organized.
+- Use GitHub Issues.
+- Describe issues clearly. "It's broken" is not helpful.
+- Label issues appropriately.
 
 ### Community and Communication
 
 - Be respectful. Remember, we're all in this together.
 - Ask questions. There are no stupid questions. Kind of. But the point is please just ask either way! No judgement! It takes a village to level up a developer.
-
-- Join our community chat (if we ever create one). It's like a digital water cooler, but with more memes.
+- Join our community chat (if we ever create one).
 
 ### Licensing
 
-By contributing, you agree your code will be licensed under the project's license. No takesy-backsies!
+By contributing, you agree your code will be licensed under the project's license.
 
 ### Review Process
 
 - Maintainers will review your contribution. They might be human. No guarantees.
-
-- Be open to feedback. It's like code therapy, but free.
+- Be open to feedback.
 - Stay responsive. We promise we won't keep you hanging... unless our skulls are busy being crushed by the titanium alloy exoskeleton of a T-800.
-
-Together, I think we can make this a standard tool in the toolbelt.
-
-## Disclaimer
-
-Use at your own risk. Side effects may include improved commit history, confused coworkers, and an existential crisis about the nature of productivity.
 
 ---
 
