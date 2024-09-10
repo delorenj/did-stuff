@@ -34,7 +34,7 @@ def install(path):
         raise click.UsageError(f"{path} is not a git repository.")
 
     hooks_dir = path / ".git" / "hooks"
-    source_hook = Path(__file__) / "prepare-commit-msg"
+    source_hook = Path(__file__).parent / "prepare-commit-msg"
     target_hook = hooks_dir / "prepare-commit-msg"
 
     if not source_hook.exists():
