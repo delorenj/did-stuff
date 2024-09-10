@@ -54,7 +54,7 @@ clean:
 prompt-and-tag:
 	$(eval TAG_NAME := llm-snapshot-$(shell date +%Y%m%d-%H%M%S))
 	@echo "\033[1;36m🚀 Converting Codebase to Prompt and Tagging for LLM 🚀\033[0m"
-	@code2prompt --no-codeblock -s --path . > /tmp/${TAG_NAME}.txt
+	@code2prompt --path . > /tmp/${TAG_NAME}.txt
 	@git tag -a -m "$(TAG_NAME)" $(TAG_NAME) > /dev/null 2>&1
 	@git push origin $(TAG_NAME) > /dev/null 2>&1
 	@echo "\033[1;32m✅ Created and pushed tag: \033[1;33m$(TAG_NAME)\033[0m"
@@ -90,5 +90,6 @@ help:
 	@echo "  lint        - Lint the Python code"
 	@echo "  format      - Format the Python code"
 	@echo "  clean       - Clean up temporary files and caches"
+	@echo "  prompt-and-tag - Convert codebase to prompt and create a git tag"
 	@echo "  summary     - Print a summary of recent changes"
 	@echo "  help        - Show this help message"

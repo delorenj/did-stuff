@@ -2,38 +2,29 @@
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "did-stuff"
-authors = [{ name = "Jarad DeLorenzo", email = "jaradd@gmail.com" }]
+authors = ["Jarad DeLorenzo <jaradd@gmail.com>"]
 description = "AI-powered Git commit message generator"
 readme = "README.md"
-requires-python = ">=3.9"
 keywords = ["git", "commit", "message", "generator", "AI"]
-license = { text = "MIT" }
+license = "MIT"
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
-dependencies = ["click", "pydantic", "openai", "boto3"]
-dynamic = ["version"]
-
-[project.optional-dependencies]
-dev = ["pytest", "pytest-mock", "pytest-cov", "ruff"]
-
-[project.scripts]
-did-stuff = "did_stuff.cli:cli"
+version = "0.1.0" # Add a version or use dynamic versioning
+packages = [{ include = "did_stuff" }]
 
 [tool.poetry.dependencies]
-python = ">=3.9"
-click = "^8.1.7"
+python = "^3.9"
+click = "^7.0"
+openai = "^0.27.0"
+boto3 = "^1.35"
 
-[tool.setuptools_scm]
-write_to = "src/did_stuff/_version.py"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["did_stuff*"]
+[tool.poetry.scripts]
+did-stuff = "did_stuff.cli:main"
 
 [tool.ruff]
 select = ["E", "F", "I"]
@@ -44,5 +35,5 @@ line-length = 120
 "__init__.py" = ["F401"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=did_stuff --cov-report=xml:coverage.xml"
+addopts = "--cov=src --cov-report=xml:coverage.xml"
 testpaths = ["tests"]
