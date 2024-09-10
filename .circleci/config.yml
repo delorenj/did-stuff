@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@4.1.0
+  poetry: frameio/poetry@0.30.6
 
 jobs:
   test:
@@ -9,26 +10,9 @@ jobs:
       - image: cimg/python:3.12
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - poetry-deps-{{ checksum "poetry.lock" }}
-      - run:
-          name: Install Poetry
-          command: |
-            curl -sSL https://install.python-poetry.org | python3 -
-            echo 'export PATH="$HOME/.local/bin:$PATH"' >> $BASH_ENV
-      - run:
-          name: Install Dependencies
-          command: |
-            poetry install
-      - save_cache:
-          paths:
-            - ~/.cache/pypoetry
-          key: poetry-deps-{{ checksum "poetry.lock" }}
-      - run:
-          name: Run Tests
-          command: |
-            poetry run pytest --cov tests
+      - poetry/install
+      - poetry/shell:
+          args: pytest
       - codecov/upload:
           file: coverage.xml
 
