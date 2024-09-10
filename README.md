@@ -1,7 +1,7 @@
 <p align="center" style="width: 100%; background-color: #13191d;">
 <picture style="width: 100%;">
-  <source media="(prefers-color-scheme: dark)" srcset="https://private-user-images.githubusercontent.com/242611/364165903-08980893-2898-43ca-89b7-23c35c4bd5d7.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjU5ODc0NTQsIm5iZiI6MTcyNTk4NzE1NCwicGF0aCI6Ii8yNDI2MTEvMzY0MTY1OTAzLTA4OTgwODkzLTI4OTgtNDNjYS04OWI3LTIzYzM1YzRiZDVkNy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwOTEwJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDkxMFQxNjUyMzRaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xMjBiODllOWIwNTkxYzliYjk1NGQ4NjM1MjJiYTQ5NmZkODkyYWMwMjZkMzQyODljNjIxNjljZDc2OTk4YjEzJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.x0_zzc23CqNjnx7PkkL_JFTj8cZx2FrFt6RAQEfF3i8">
-  <img src="https://private-user-images.githubusercontent.com/242611/364165903-08980893-2898-43ca-89b7-23c35c4bd5d7.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjU5ODc0NTQsIm5iZiI6MTcyNTk4NzE1NCwicGF0aCI6Ii8yNDI2MTEvMzY0MTY1OTAzLTA4OTgwODkzLTI4OTgtNDNjYS04OWI3LTIzYzM1YzRiZDVkNy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwOTEwJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDkxMFQxNjUyMzRaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xMjBiODllOWIwNTkxYzliYjk1NGQ4NjM1MjJiYTQ5NmZkODkyYWMwMjZkMzQyODljNjIxNjljZDc2OTk4YjEzJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.x0_zzc23CqNjnx7PkkL_JFTj8cZx2FrFt6RAQEfF3i8" alt="Did Stuff" style="width: 100%;">
+  <source media="(prefers-color-scheme: dark)" srcset="https://delorenj.github.io/did-stuff/did-stuff-hero-dark.png">
+  <img src="https://delorenj.github.io/did-stuff/did-stuff-hero-dark.png" alt="Did Stuff" style="width: 100%;">
 </picture>
 </p>
 
@@ -9,11 +9,13 @@
 [![codecov](https://codecov.io/github/delorenj/did-stuff/graph/badge.svg?token=HVFQOW9TC6)](https://codecov.io/github/delorenj/did-stuff)
 ![AI Powered](https://img.shields.io/badge/powered%20by-skynet-blue)
 ![made with love for](https://img.shields.io/badge/made%20with%20love%20for-Justworks-blue)
+
 > Because let's face it, your commit messages suck. Time to let the machines take over.
 
 **Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
 
 ## I Present To You...
+
 The most time efficient commit workflow possible, before we tread into "Eh, you just handle it AI - I trust you" territory.
 
 ### This thing here will:
@@ -93,7 +95,7 @@ Found a bug? Want to add a feature? Pull requests welcome! We're all about that 
 ### Getting Started
 
 1. Fork the repo (it's like adopting a digital pet,
- but with more responsibility)
+   but with more responsibility)
 2. Clone it locally
 3. Create a new branch: `git checkout -b feature/skynet-integration` or `git checkout -b fix/cyborg-DoD-backdoor`
 4. Make your changes
@@ -107,7 +109,7 @@ Found a bug? Want to add a feature? Pull requests welcome! We're all about that 
 
 - **Be Creative**: We encourage innovative ideas.
 - **Flexibility First**: Make your features adaptable. It should work whether we're using AWS, OpenAI, or anything else (within reason). Bonus points if we can make it repo-agnostic too!
-- **Documentation**: Update the README or add comments. 
+- **Documentation**: Update the README or add comments.
 - **Testing**: Add tests. There really is no excuse anymore not to.
 - **Code Style**: Follow the project's style.
 
