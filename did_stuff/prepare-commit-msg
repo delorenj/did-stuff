@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+
+
+def main():
+    commit_msg_file = sys.argv[1]
+
+    try:
+        result = subprocess.run(["did-stuff", "generate-message"], capture_output=True, text=True, check=True)
+        generated_message = result.stdout.strip()
+
+        if generated_message:
+            with open(commit_msg_file, "r+") as f:
+                existing_message = f.read()
+                f.seek(0)
+                f.write(f"{generated_message}\n\n{existing_message}")
+                f.truncate()
+            print("Commit message generated and prepended to the existing message.")
+        else:
+            print("No commit message was generated.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error generating commit message: {e}")
+        print(f"Error output: {e.stderr}")
+
+
+if __name__ == "__main__":
+    main()
