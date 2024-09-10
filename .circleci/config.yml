@@ -11,22 +11,24 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - pip-packages-v1-{{ checksum "requirements.txt" }}
+            - poetry-deps-{{ checksum "poetry.lock" }}
+      - run:
+          name: Install Poetry
+          command: |
+            curl -sSL https://install.python-poetry.org | python3 -
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> $BASH_ENV
       - run:
           name: Install Dependencies
           command: |
-            python -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
+            poetry install
       - save_cache:
           paths:
-            - ./venv
-          key: pip-packages-v1-{{ checksum "requirements.txt" }}
+            - ~/.cache/pypoetry
+          key: poetry-deps-{{ checksum "poetry.lock" }}
       - run:
           name: Run Tests
           command: |
-            . venv/bin/activate
-            pytest --cov tests
+            poetry run pytest --cov tests
       - codecov/upload:
           file: coverage.xml
 

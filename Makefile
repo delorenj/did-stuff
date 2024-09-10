@@ -4,7 +4,6 @@
 PYTHON = python3
 PYTEST = pytest
 PIP = pip3
-INSTALL_SCRIPT = ./install-cli.sh
 CONFIG_FILE = .git-commit-message-generator-config.json
 
 # Installs the DidStuff CLI tool
@@ -15,7 +14,7 @@ all: install
 .PHONY: install
 install:
 	@echo "Installing DeLoOps Did Stuff hook..."
-	@bash $(INSTALL_SCRIPT)
+	@poetry install
 
 # Install the hook to your local git repo
 .PHONY: install-hook
@@ -26,7 +25,8 @@ install-hook:
 .PHONY: test
 test:
 	@echo "Running tests..."
-	@$(PYTEST) tests
+	@poetry run pytest
+
 
 # Lint the Python code
 .PHONY: lint
@@ -79,6 +79,12 @@ dev-setup:
 	@$(PIP) install -e ".[dev]"
 	@echo "Development environment setup complete."
 
+# Show current configuration
+.PHONY: show-config
+show-config:
+	@echo "Showing current configuration..."
+	@did-stuff show-config
+
 # Show help
 .PHONY: help
 help:
@@ -92,4 +98,5 @@ help:
 	@echo "  clean       - Clean up temporary files and caches"
 	@echo "  prompt-and-tag - Convert codebase to prompt and create a git tag"
 	@echo "  summary     - Print a summary of recent changes"
+	@echo "  show-config - Show current configuration based on directory context"
 	@echo "  help        - Show this help message"
