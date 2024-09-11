@@ -10,79 +10,182 @@
 ![AI Powered](https://img.shields.io/badge/powered%20by-skynet-blue)
 ![made with love for](https://img.shields.io/badge/made%20with%20love%20for-Justworks-blue)
 
-> Because let's face it, your commit messages suck. Time to let the machines take over.
+> Because your commit messages suck.
 
 **Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
 
-## I Present To You...
-
-The most time efficient commit workflow possible, before we tread into "Eh, you just handle it AI - I trust you" territory.
-
-### This thing here will:
+### This thing here will
 
 1. Peek at your dirty, dirty diffs
-2. Summon whichever AI God you pray to (for now,AWS Bedrock or OpenAI.)
-3. Spit out commit messages that almost make sense. Look em over. Verify them. Or whatever. Let's be real though - "wq" and be on your way. It'll be muscle memory before you know it.
+2. Spit out commit messages that are informative, concise. No more "Did stuff", or "Fixed a thing" comments.
 
-## Check out these :foot:-churrs:
+#### Look em over :eyes:
+
+Verify them. Or whatever. Let's be real though - "wq" and be on your way.
+It'll be muscle memory before you know it.
+
+## Check out these features!
 
 - 🧠 Uses AI to understand your diff at a high level (probably better than you do)
-- 🎭 Supports both AWS Bedrock and OpenAI (because if I release this to the wild, people will complain that my free gift wasn't good enough)
-- 🌈 Generates commit messages that are informative, concise, and will never be "too tired" and just say "Did stuff"
-- 🚀 Comes with a fancy install script (because who doesn't love more automation?)
-- 🧪 Includes tests!
+- 🎭 Supports both AWS Bedrock and OpenAI
+- 🌈 Customizable commit message styles - just set your own prompt if the defaults don't work for you
+- 🚀 Comes with a fancy CLI to manage your AI providers and install to your repositories
+- 🧪 Includes tests, because we're professionals
+
+# Did Stuff
+
+> Because your commit messages suck.
+
+**Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
+
+## What is this?
+
+Did Stuff is an AI-powered Git commit message generator that will:
+
+1. Peek at your dirty, dirty diffs
+2. Spit out commit messages that are informative and concise. No more "Did stuff" or "Fixed a thing" comments.
+
+## Features
+
+- 🧠 Uses AI to understand your diff at a high level (probably better than you do)
+- 🎭 Supports both AWS Bedrock and OpenAI
+- 🌈 Customizable commit message styles - just set your own prompt if the defaults don't work for you
+- 🚀 Comes with a fancy CLI to manage your AI providers and install to your repositories
+- 🧪 Includes tests, because we're professionals
 
 ## Installation
 
-1. Clone this repo
-2. Run `./install.sh`
-3. Follow the prompts to set up your AI provider
-4. Watch as your Git hooks are magically set up
+### Prerequisites
+
+1. **Python**: Did Stuff requires Python 3.9 or higher. If you don't have Python installed, you have a few options:
+
+   a. **Using asdf** (recommended for managing multiple Python versions):
+
+   ```bash
+   asdf plugin add python
+   asdf install python 3.9.0
+   asdf global python 3.9.0
+   ```
+
+   b. **Using Homebrew** (for macOS users):
+
+   ```bash
+   brew install python@3.9
+   ```
+
+   c. **Direct download**: Visit [python.org](https://www.python.org/downloads/) and download the latest version for your operating system.
+
+2. **Poetry**: We use Poetry for dependency management. If you don't have it installed:
+
+   a. **Using pip** (Python's package installer):
+
+   ```bash
+   pip install poetry
+   ```
+
+   b. **Using Homebrew** (for macOS users):
+
+   ```bash
+   brew install poetry
+   ```
+
+   c. **Official installer** (for any OS):
+
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
+
+### Installing Did Stuff
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/delorenj/did-stuff.git
+   cd did-stuff
+   ```
+
+2. Install the CLI using Poetry:
+   ```bash
+   poetry install
+   ```
+
+## Using the did-stuff CLI
+
+### Configuration
+
+1. Run the configuration wizard:
+
+   ```bash
+   poetry run did-stuff configure
+   ```
+
+   This will guide you through setting up your AI provider and other settings.
+
+2. Alternatively, you can manually create a configuration file. Create `~/.git-commit-message-generator-config.json` with one of these example configurations:
+
+   For OpenAI:
+
+   ```json
+   {
+     "AI": {
+       "provider": "openai",
+       "model_id": "gpt-3.5-turbo",
+       "max_tokens": 300,
+       "temperature": 0.3
+     }
+   }
+   ```
+
+   Note: Ensure `OPENAI_API_KEY` is set in your environment variables.
+
+   For AWS Bedrock:
+
+   ```json
+   {
+     "AI": {
+       "provider": "aws-bedrock",
+       "model_id": "anthropic.claude-3-5-sonnet-20240620-v1:0",
+       "max_tokens": 300,
+       "temperature": 0.3
+     },
+     "AWS": {
+       "profile_name": "your-aws-profile-name"
+     }
+   }
+   ```
+
+   Note: Ensure your AWS credentials are configured and you have access to the requested model. If your company uses SSO, make sure your session is logged in using `aws sso login`.
+
+3. Did Stuff looks for the config file in your current directory first, then in your home directory.
+
+4. Verify your configuration:
+   ```bash
+   poetry run did-stuff show-config
+   ```
+
+### Installing to a Repository
+
+To install Did Stuff in a Git repository:
+
+```bash
+poetry run did-stuff install [path]
+```
+
+If no path is specified, it uses the current directory. This installs the prepare-commit-msg hook in the specified Git repository.
 
 ## Usage
 
-1. Code
-2. `git add .`
-3. `git commit`
+Once installed in a repository, Did Stuff works automatically:
 
-## Configuration
+1. Code your changes
+2. Stage your changes: `git add .`
+3. Commit: `git commit`
 
-The install script will create a config file at `~/.git-commit-message-generator-config.json`. If you're feeling frisky, you can edit it manually:
+Did Stuff will generate an AI-powered commit message for you to review and edit if needed.
 
-#### Configured for OpenAI
+## Contributing
 
-> Note: If you choose OpenAI, you must ensure `OPENAI_API_KEY` is set in your environment variables.
-
-```json
-{
-  "AI": {
-    "provider": "openai",
-    "model_id": "gpt-3.5-turbo",
-    "max_tokens": 300,
-    "temperature": 0.3
-  }
-}
-```
-
-#### Configured for AWS Bedrock (Claude 3.5 Sonnet)
-
-> Note: If you choose AWS Bedrock, you must ensure your AWS credentials are configured and you have access to the model requested.
-
-If your company uses SSO make sure your session is logged in using `aws sso login`
-
-```json
-{
-  "AI": {
-    "provider": "aws-bedrock",
-    "model_id": "anthropic.claude-3-5-sonnet-20240620-v1:0",
-    "max_tokens": 300,
-    "temperature": 0.3
-  },
-  "AWS": {
-    "profile_name": "your-aws-profile-name"
-  }
-}
-```
+Found a bug? Want to add a feature? Pull requests welcome! We're all about that collaborative spirit (at least until the AI entities deem human collaboration unnecessary).
 
 ## Testing (because we're professionals)
 
