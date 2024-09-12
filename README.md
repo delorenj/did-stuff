@@ -14,6 +14,8 @@
 
 **Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
 
+<img src="https://delorenj.github.io/did-stuff/did-stuff-demo.gif" alt="Alt text" width="100%"/>
+
 ### This thing here will
 
 1. Peek at your dirty, dirty diffs
