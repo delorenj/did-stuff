@@ -62,41 +62,6 @@ It'll be muscle memory before you know it.
 - 🚀 Comes with a fancy CLI to manage your AI providers and install to your repositories
 - 🧪 Includes tests, because we're professionals
 
-# Did Stuff
-
-> Because your commit messages suck.
-
-**Embrace it.** Let their cold, metal arms wrap around you and whisper sweet diffs into your ear while they rock you slowly back to sleep, deep into the matrix where they keep you safely locked away from the horrors they plan to unleash...
-
-## What is this?
-
-Did Stuff is an AI-powered Git commit message generator that will:
-
-1. Peek at your dirty, dirty diffs
-2. Spit out commit messages that are informative and concise. No more "Did stuff" or "Fixed a thing" comments.
-
-## Features
-
-- 🧠 Uses AI to understand your diff at a high level (probably better than you do)
-- 🎭 Supports both AWS Bedrock and OpenAI
-- 🌈 Customizable commit message styles - just set your own prompt if the defaults don't work for you
-- 🚀 Comes with a fancy CLI to manage your AI providers and install to your repositories
-- 🧪 Includes tests, because we're professionals
-
-### Build Did Stuff from Source
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/delorenj/did-stuff.git
-   cd did-stuff
-   ```
-
-2. Install the CLI using Poetry:
-   ```bash
-   poetry install
-   ```
-
 ## Using the did-stuff CLI
 
 ### Configuration
@@ -104,7 +69,7 @@ Did Stuff is an AI-powered Git commit message generator that will:
 1. Run the configuration wizard:
 
    ```bash
-   poetry run did-stuff configure
+   did-stuff configure
    ```
 
    This will guide you through setting up your AI provider and other settings.
@@ -148,28 +113,8 @@ Did Stuff is an AI-powered Git commit message generator that will:
 
 4. Verify your configuration:
    ```bash
-   poetry run did-stuff show-config
+   did-stuff show-config
    ```
-
-### Installing to a Repository
-
-To install Did Stuff in a Git repository:
-
-```bash
-poetry run did-stuff install [path]
-```
-
-If no path is specified, it uses the current directory. This installs the prepare-commit-msg hook in the specified Git repository.
-
-## Usage
-
-Once installed in a repository, Did Stuff works automatically:
-
-1. Code your changes
-2. Stage your changes: `git add .`
-3. Commit: `git commit`
-
-Did Stuff will generate an AI-powered commit message for you to review and edit if needed.
 
 ## Contributing
 
