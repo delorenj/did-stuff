@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
-from did_stuff.cli import install, main
+from did_stuff.cli import enable, main
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def test_main_help(runner):
     assert "Did Stuff CLI for managing AI-powered Git commit messages." in result.output
 
 
-def test_install_to_current_path_when_path_is_a_git_repo(runner, tmp_path):
+def test_enable_in_current_path_when_path_is_a_git_repo(runner, tmp_path):
     # Create a mock .git directory
     git_dir = tmp_path / ".git"
     git_dir.mkdir()
@@ -26,13 +26,13 @@ def test_install_to_current_path_when_path_is_a_git_repo(runner, tmp_path):
     with patch("shutil.copy2") as mock_copy, patch("os.chmod") as mock_chmod, patch(
         "pathlib.Path.exists", return_value=True
     ):  # Mock the existence of the source hook file
-        result = runner.invoke(install, [str(tmp_path)])
+        result = runner.invoke(enable, [str(tmp_path)])
 
     print(f"Exit code: {result.exit_code}")
     print(f"Output: {result.output}")
 
     assert result.exit_code == 0, f"Command failed with output: {result.output}"
-    assert "Git hook installed successfully" in result.output
+    assert "Git hook enabled successfully" in result.output
 
     mock_copy.assert_called_once()
     mock_chmod.assert_called_once()

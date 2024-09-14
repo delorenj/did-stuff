@@ -16,6 +16,34 @@
 
 <img src="https://delorenj.github.io/did-stuff/did-stuff-demo.gif?v2" alt="Alt text" width="100%"/>
 
+### Quickstart
+
+#### Install the CLI
+
+```bash
+pip install did-stuff
+```
+
+#### Configure your AI provider
+
+```bash
+did-stuff configure
+```
+
+#### Enable the hook in a Repository
+
+```bash
+did-stuff enable /path/to/your/repo
+```
+
+or
+
+#### Enable the hook in the current repository
+
+```bash
+did-stuff enable
+```
+
 ### This thing here will
 
 1. Peek at your dirty, dirty diffs
@@ -55,49 +83,7 @@ Did Stuff is an AI-powered Git commit message generator that will:
 - 🚀 Comes with a fancy CLI to manage your AI providers and install to your repositories
 - 🧪 Includes tests, because we're professionals
 
-## Installation
-
-### Prerequisites
-
-1. **Python**: Did Stuff requires Python 3.9 or higher. If you don't have Python installed, you have a few options:
-
-   a. **Using asdf** (recommended for managing multiple Python versions):
-
-   ```bash
-   asdf plugin add python
-   asdf install python 3.9.0
-   asdf global python 3.9.0
-   ```
-
-   b. **Using Homebrew** (for macOS users):
-
-   ```bash
-   brew install python@3.9
-   ```
-
-   c. **Direct download**: Visit [python.org](https://www.python.org/downloads/) and download the latest version for your operating system.
-
-2. **Poetry**: We use Poetry for dependency management. If you don't have it installed:
-
-   a. **Using pip** (Python's package installer):
-
-   ```bash
-   pip install poetry
-   ```
-
-   b. **Using Homebrew** (for macOS users):
-
-   ```bash
-   brew install poetry
-   ```
-
-   c. **Official installer** (for any OS):
-
-   ```bash
-   curl -sSL https://install.python-poetry.org | python3 -
-   ```
-
-### Installing Did Stuff
+### Build Did Stuff from Source
 
 1. Clone the repository:
 

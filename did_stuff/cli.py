@@ -30,8 +30,8 @@ def main(ctx, verbose):
 
 @main.command()
 @click.argument("path", type=click.Path(exists=True, file_okay=False, dir_okay=True), default=".")
-def install(path):
-    """Install the pre-commit hook in the specified repository."""
+def enable(path):
+    """Enable the pre-commit hook in the specified repository."""
     path = Path(path).resolve()
     if not (path / ".git").is_dir():
         raise click.UsageError(f"{path} is not a git repository.")
@@ -46,7 +46,7 @@ def install(path):
     shutil.copy2(source_hook, target_hook)
     os.chmod(target_hook, 0o755)  # Make the hook executable
 
-    click.echo(f"Git hook installed successfully in {path}")
+    click.echo(f"Git hook enabled successfully in {path}")
 
 
 @main.command()
