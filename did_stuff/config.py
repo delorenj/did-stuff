@@ -53,7 +53,7 @@ DEFAULT_USER_PROMPT = (
     "message \n\n{diff}"
 )
 DEFAULT_SYSTEM_PROMPT = "You are an AI assistant helping to generate Git commit messages from diffs."
-CONFIG_FILENAME = ".git-commit-message-generator-config.json"
+CONFIG_FILENAME = "config.json"
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -115,27 +115,72 @@ def validate_config(config: Config) -> None:
         raise ValueError("OpenRouter configuration is required when using openrouter provider")
 
 
-def load_config(custom_path: Optional[Path] = None) -> Dict[str, Any]:
-    config_locations = [custom_path, Path(CONFIG_FILENAME), Path.home() / CONFIG_FILENAME]
+class ConfigManager:
+    def __init__(self):
+        self.global_config_dir = Path.home() / ".config" / "did-stuff"
+        self.project_config_file = Path(".did-stuff") / CONFIG_FILENAME
+        self.global_config_file = self.global_config_dir / CONFIG_FILENAME
 
-    for location in config_locations:
-        if location is None:
-            continue
+    def _load_single_config(self, path: Path) -> Dict[str, Any]:
+        """Load a single config file if it exists and is valid"""
+        if not path.exists():
+            return {}
+            
+        try:
+            with path.open() as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            logger.warning(f"Failed to load config from {path}: {str(e)}")
+            return {}
 
-        logger.info(f"Attempting to load configuration from {location}")
-        if location.exists():
-            try:
-                with location.open() as f:
-                    config = json.load(f)
-                logger.info(f"Configuration loaded successfully from {location}")
-                return config
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse JSON from {location}. Skipping.")
+    def load_config(self, custom_path: Optional[Path] = None) -> Dict[str, Any]:
+        """Load and merge configurations from multiple sources with precedence:
+        1. Custom path (highest precedence)
+        2. Project config (.did-stuff/config.json)
+        3. Global config (~/.config/did-stuff/config.json)
+        """
+        # Ensure global config directory exists
+        self.global_config_dir.mkdir(parents=True, exist_ok=True)
+
+        # Load configs in order of increasing precedence
+        config = {}
+        
+        # Global config
+        global_config = self._load_single_config(self.global_config_file)
+        config.update(global_config)
+        
+        # Project config
+        project_config = self._load_single_config(self.project_config_file)
+        config.update(project_config)
+        
+        # Custom path (highest precedence)
+        if custom_path:
+            custom_config = self._load_single_config(custom_path)
+            config.update(custom_config)
+
+        return config
+
+    def save_config(self, config: Dict[str, Any], scope: str = "project") -> None:
+        """Save configuration to appropriate location based on scope"""
+        if scope == "project":
+            self.project_config_file.parent.mkdir(exist_ok=True)
+            target_file = self.project_config_file
         else:
-            logger.info(f"Config file not found at {location}")
+            self.global_config_dir.mkdir(parents=True, exist_ok=True)
+            target_file = self.global_config_file
 
-    logger.warning("No valid configuration file found. Returning empty config.")
-    return {}
+        try:
+            with target_file.open("w") as f:
+                json.dump(config, f, indent=2)
+            logger.info(f"Configuration saved successfully to {target_file}")
+        except OSError as e:
+            logger.error(f"Failed to save config to {target_file}: {str(e)}")
+            raise
+
+
+def load_config(custom_path: Optional[Path] = None) -> Dict[str, Any]:
+    """Backward-compatible wrapper for ConfigManager"""
+    return ConfigManager().load_config(custom_path)
 
 
 def set_config(scope: str, key: str, value: str):
@@ -146,7 +191,9 @@ def set_config(scope: str, key: str, value: str):
         config[scope] = {}
     config[scope][key] = value
 
-    config_file = Path(CONFIG_FILENAME) if scope == "local" else Path.home() / CONFIG_FILENAME
+    config_dir = Path.home() / ".config" / "did-stuff"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_file = config_dir / CONFIG_FILENAME
     logger.info(f"Saving configuration to {config_file}")
     with config_file.open("w") as f:
         json.dump(config, f, indent=2)

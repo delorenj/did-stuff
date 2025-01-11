@@ -51,16 +51,33 @@ def enable(path):
 
 @main.command()
 @click.option("--global", "is_global", is_flag=True, help="Set global config")
-@click.option("--local", "is_local", is_flag=True, help="Set local config")
+@click.option("--project", "is_project", is_flag=True, help="Set project config")
 @click.option("--key", required=True, help="Configuration key")
 @click.option("--value", required=True, help="Configuration value")
-def set_config(is_global, is_local, key, value):
+def set_config(is_global, is_project, key, value):
     """Manage Did Stuff configuration."""
-    if is_global == is_local:
-        raise click.UsageError("Specify either --global or --local")
-    scope = "global" if is_global else "local"
+    if is_global == is_project:
+        raise click.UsageError("Specify either --global or --project")
+    
+    if is_global:
+        scope = "global"
+    else:
+        scope = "project"
+
     click.echo(f"Setting {scope} config: {key} = {value}")
-    config.set_config(scope, key, value)
+    
+    config_manager = config.ConfigManager()
+    
+    # Load existing config, make changes, and save
+    cfg = config_manager.load_config()
+    
+    # Ensure the section exists
+    if scope not in cfg:
+        cfg[scope] = {}
+    
+    cfg[scope][key] = value
+    config_manager.save_config(cfg, scope=scope)
+
     click.echo("Configuration updated successfully.")
 
 
