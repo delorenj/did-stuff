@@ -48,6 +48,7 @@ did-stuff enable
 
 1. Peek at your dirty, dirty diffs
 2. Spit out commit messages that are informative, concise. No more "Did stuff", or "Fixed a thing" comments.
+3. Automatically handle large diffs by intelligently reducing their size while preserving the most relevant changes
 
 #### Look em over :eyes:
 
@@ -60,6 +61,7 @@ It'll be muscle memory before you know it.
 - 🎭 Supports both AWS Bedrock and OpenAI
 - 🌈 Customizable commit message styles - just set your own prompt if the defaults don't work for you
 - 🚀 Comes with a fancy CLI to manage your AI providers and install to your repositories
+- 🛡️ Smart handling of large diffs - automatically adjusts content to stay within model limits
 - 🧪 Includes tests, because we're professionals
 
 ## Using the did-stuff CLI
@@ -82,14 +84,15 @@ It'll be muscle memory before you know it.
    {
      "AI": {
        "provider": "openai",
-       "model_id": "gpt-3.5-turbo",
+       "model_id": "gpt-4",
        "max_tokens": 300,
        "temperature": 0.3
+     },
+     "OpenAI": {
+       "api_key": "your-openai-api-key"
      }
    }
    ```
-
-   Note: Ensure `OPENAI_API_KEY` is set in your environment variables.
 
    For AWS Bedrock:
 
@@ -120,26 +123,43 @@ It'll be muscle memory before you know it.
 
 Found a bug? Want to add a feature? Pull requests welcome! We're all about that collaborative spirit (at least until the AI entities deem human collaboration unnecessary).
 
-## Testing (because we're professionals)
-
-Run `pytest` and cross your fingers.
-
-## Contributing
-
-Found a bug? Want to add a feature? Pull requests welcome! We're all about that collaborative spirit (at least until the AI entities deem human collaboration unnecessary).
-
 ### Getting Started
 
 1. Fork the repo (it's like adopting a digital pet,
    but with more responsibility)
 2. Clone it locally
 3. Create a new branch: `git checkout -b feature/skynet-integration` or `git checkout -b fix/cyborg-DoD-backdoor`
-4. Make your changes
-5. Write or update tests
-6. Run the test suite
-7. Commit your changes with a clear message (or better yet, dogfood it with this tool)
-8. Push your branch: `git push origin your-branch-name`
-9. Open a pull request
+4. Install development dependencies:
+   ```bash
+   # Create and activate a virtual environment (recommended)
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   
+   # Install dependencies
+   make install
+   ```
+5. Make your changes
+6. Write or update tests
+7. Run the test suite: `make test`
+8. Commit your changes with a clear message (or better yet, dogfood it with this tool)
+9. Push your branch: `git push origin your-branch-name`
+10. Open a pull request
+
+### Development Setup
+
+The project uses UV for dependency management. Key files:
+
+- `requirements.in`: Core dependencies
+- `requirements-dev.in`: Development dependencies
+- `requirements.txt` and `requirements-dev.txt`: Generated locked dependency files
+
+Common development commands:
+```bash
+make install        # Install all dependencies
+make test          # Run tests
+make lint          # Run linting
+make format        # Format code
+```
 
 ### Contribution Guidelines
 
@@ -148,7 +168,6 @@ Found a bug? Want to add a feature? Pull requests welcome! We're all about that 
 - **Documentation**: Update the README or add comments.
 - **Testing**: Add tests. There really is no excuse anymore not to.
 - **Code Style**: Follow the project's style.
-
 - **Commit Messages**: Whatever
 - **Pull Requests**: Keep them focused. One feature per PR.
 
@@ -178,29 +197,13 @@ By contributing, you agree your code will be licensed under the project's licens
 
 Remember, in the grand scheme of things, we're all be out of jobs in a few years. But hey, at least our commit messages will be top-notch!
 
-## Using OpenRouter Provider
+## Large Diff Handling
 
-To use OpenRouter as your AI provider:
+Did Stuff now intelligently handles large diffs that might exceed model context limits:
 
-1. Copy the example config:
-   ```sh
-   cp git-config-message-generator-config.openrouter.example.json ~/.git-commit-message-generator-config.json
-   ```
+1. Starts with the complete diff for maximum context
+2. If the model's token limit is exceeded, automatically reduces the diff size
+3. Uses a progressive reduction strategy to find the optimal size
+4. Preserves the most relevant parts of the diff for accurate commit messages
 
-2. Edit the config file and add your OpenRouter API key:
-   ```json
-   {
-     "AI": {
-       "provider": "openrouter",
-       "model_id": "anthropic/claude-2"
-       // ... other AI settings
-     },
-     "OpenRouter": {
-       "api_key": "your-openrouter-api-key"
-     }
-   }
-   ```
-
-3. Available models can be found at [OpenRouter's model list](https://openrouter.ai/docs#models)
-
-The OpenRouter provider uses the OpenAI client library with a custom base URL, so no additional dependencies are required. This makes it easy to switch between providers without changing your development environment.
+This means you don't have to worry about the size of your changes - Did Stuff will automatically adjust to provide the best possible commit message while staying within model limitations.
