@@ -177,3 +177,30 @@ By contributing, you agree your code will be licensed under the project's licens
 ---
 
 Remember, in the grand scheme of things, we're all be out of jobs in a few years. But hey, at least our commit messages will be top-notch!
+
+## Using OpenRouter Provider
+
+To use OpenRouter as your AI provider:
+
+1. Copy the example config:
+   ```sh
+   cp git-config-message-generator-config.openrouter.example.json ~/.git-commit-message-generator-config.json
+   ```
+
+2. Edit the config file and add your OpenRouter API key:
+   ```json
+   {
+     "AI": {
+       "provider": "openrouter",
+       "model_id": "anthropic/claude-2"
+       // ... other AI settings
+     },
+     "OpenRouter": {
+       "api_key": "your-openrouter-api-key"
+     }
+   }
+   ```
+
+3. Available models can be found at [OpenRouter's model list](https://openrouter.ai/docs#models)
+
+The OpenRouter provider uses the OpenAI client library with a custom base URL, so no additional dependencies are required. This makes it easy to switch between providers without changing your development environment.
