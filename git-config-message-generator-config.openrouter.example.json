@@ -1,0 +1,14 @@
+{
+  "AI": {
+    "provider": "openrouter",
+    "model_id": "anthropic/claude-2",
+    "max_tokens": 300,
+    "temperature": 0.3,
+    "user_prompt": "You are an AI assistant specialized in analyzing git diffs and generating concise, informative commit messages. Your task is to examine the provided git diff output and create a commit message that summarizes the changes effectively. Follow these guidelines when generating the commit message: Start with a brief, high-level summary of the commit on the first line. This should be a concise overview of the main purpose or impact of the changes. After the high-level summary, provide a bulleted list of specific changes. Remember to analyze the git diff carefully and produce a commit message that accurately reflects the changes made. Output: Github Markdown, result ONLY! Your response should be a commit message that is formatted correctly for a git commit message \n\n{diff}",
+    "system_prompt": "You are an AI assistant helping to generate Git commit messages from diffs."
+  },
+  "OpenRouter": {
+    "api_key": "your-openrouter-api-key",
+    "base_url": "https://openrouter.ai/api/v1"
+  }
+}

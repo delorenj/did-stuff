@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Literal, Optional
@@ -7,7 +8,7 @@ from typing import Any, Dict, Literal, Optional
 
 @dataclass
 class AIConfig:
-    provider: Literal["aws-bedrock", "openai"]
+    provider: Literal["aws-bedrock", "openai", "openrouter"]
     model_id: str
     max_tokens: int
     temperature: float
@@ -26,10 +27,16 @@ class OpenAIConfig:
 
 
 @dataclass
+class OpenRouterConfig:
+    api_key: str
+
+
+@dataclass
 class Config:
     ai: AIConfig
     aws: Optional[AWSConfig] = None
     openai: Optional[OpenAIConfig] = None
+    openrouter: Optional[OpenRouterConfig] = None
 
 
 # Constants
@@ -49,12 +56,13 @@ DEFAULT_SYSTEM_PROMPT = "You are an AI assistant helping to generate Git commit 
 CONFIG_FILENAME = ".git-commit-message-generator-config.json"
 
 # Set up logging
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
 def load_and_validate_config(custom_path: Optional[Path] = None) -> Config:
     config_dict = load_config(custom_path)
+    logger.info(f"Loaded config dict: {config_dict}")
 
     ai_config = config_dict.get("AI", {})
     ai = AIConfig(
@@ -70,15 +78,22 @@ def load_and_validate_config(custom_path: Optional[Path] = None) -> Config:
     aws = AWSConfig(profile_name=aws_config["profile_name"]) if aws_config else None
 
     openai_config = config_dict.get("OpenAI")
+    logger.info(f"OpenAI config: {openai_config}")
     openai = OpenAIConfig(api_key=openai_config["api_key"]) if openai_config and "api_key" in openai_config else None
+    logger.info(f"Created OpenAI config object: {openai}")
 
-    config = Config(ai=ai, aws=aws, openai=openai)
+    openrouter_config = config_dict.get("OpenRouter")
+    logger.info(f"OpenRouter config: {openrouter_config}")
+    openrouter = OpenRouterConfig(api_key=openrouter_config["api_key"]) if openrouter_config and "api_key" in openrouter_config else None
+    logger.info(f"Created OpenRouter config object: {openrouter}")
+
+    config = Config(ai=ai, aws=aws, openai=openai, openrouter=openrouter)
     validate_config(config)
     return config
 
 
 def validate_config(config: Config) -> None:
-    if config.ai.provider not in {"aws-bedrock", "openai"}:
+    if config.ai.provider not in {"aws-bedrock", "openai", "openrouter"}:
         raise ValueError(f"Invalid AI provider: {config.ai.provider}")
 
     if config.ai.max_tokens <= 0:
@@ -95,6 +110,9 @@ def validate_config(config: Config) -> None:
             "OpenAI API key is not set in config or environment. "
             "Make sure to set it before generating commit messages."
         )
+
+    if config.ai.provider == "openrouter" and not config.openrouter:
+        raise ValueError("OpenRouter configuration is required when using openrouter provider")
 
 
 def load_config(custom_path: Optional[Path] = None) -> Dict[str, Any]:

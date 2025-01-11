@@ -6,15 +6,26 @@ PYTEST = pytest
 PIP = pip3
 CONFIG_FILE = .git-commit-message-generator-config.json
 
-# Installs the DidStuff CLI tool
+# Default target
 .PHONY: all
 all: install
 
-# Install the cli tool
+# Install dependencies using UV
 .PHONY: install
-install:
-	@echo "Installing DeLoOps Did Stuff hook..."
-	@poetry install
+install: requirements.txt requirements-dev.txt
+	@echo "Installing dependencies with UV..."
+	@uv pip install -r requirements-dev.txt
+	@echo "Installing package in development mode..."
+	@uv pip install -e .
+
+# Generate locked requirements files
+requirements.txt: requirements.in
+	@echo "Generating requirements.txt..."
+	@uv pip compile requirements.in -o requirements.txt
+
+requirements-dev.txt: requirements-dev.in
+	@echo "Generating requirements-dev.txt..."
+	@uv pip compile requirements-dev.in -o requirements-dev.txt
 
 # Install the hook to your local git repo
 .PHONY: install-hook
@@ -22,11 +33,11 @@ install-hook:
 	@echo "Installing DeLoOps Did Stuff hook..."
 	@bash $(INSTALL_SCRIPT) hook
 
+# Run tests
 .PHONY: test
 test:
 	@echo "Running tests..."
-	@poetry run pytest
-
+	@pytest
 
 # Lint the Python code
 .PHONY: lint
@@ -48,7 +59,7 @@ clean:
 	@find . -type d -name '__pycache__' -delete
 	@rm -rf .pytest_cache
 	@rm -f $(CONFIG_FILE)
-
+	@rm -f requirements.txt requirements-dev.txt
 
 .PHONY: prompt-and-tag
 prompt-and-tag:
@@ -71,12 +82,10 @@ prompt-and-tag:
 summary:
 	@echo "Generating summary of recent changes..."
 	@$(PYTHON) src/print_summary.py
-	
+
 # Set up development environment
 .PHONY: dev-setup
-dev-setup:
-	@echo "Setting up development environment..."
-	@$(PIP) install -e ".[dev]"
+dev-setup: install
 	@echo "Development environment setup complete."
 
 # Show current configuration
@@ -89,7 +98,7 @@ show-config:
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  install     - Install the cli tool"
+	@echo "  install     - Install dependencies with UV"
 	@echo "  install-hook - Install the hook to your local git repo"
 	@echo "  dev-setup   - Set up development environment"
 	@echo "  test        - Run the test suite"
